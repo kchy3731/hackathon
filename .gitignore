@@ -1,5 +1,17 @@
-ai/.vscode
-scraper/.vscode
-webserver/.vscode
+#global
+.DS_Store
 
+# ai
+ai/.vscode
+
+# scraper
+scraper/token.pickle
+scraper/.vscode
+scraper/.env
+scraper/client_secrets.json
+scraper/*.txt
+scraper/venv
+
+# webserver
+webserver/.vscode
 webserver/vendor
