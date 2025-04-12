@@ -1,0 +1,5 @@
+ai/.vscode
+scraper/.vscode
+webserver/.vscode
+
+webserver/vendor
