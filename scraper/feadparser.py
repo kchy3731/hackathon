@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import csv
 from scraper import article
 
-def parseRSS(DB1) -> list[article]:
+def parseRSS() -> list[article]:
 
     now = datetime.now()
     time_range = timedelta(days=1)

@@ -220,7 +220,7 @@ class RedditRSSFetcher:
         
         return rss_feeds
     
-    def save_to_file(self, rss_feeds, filename="RSS.txt"):
+    def save_to_file(self, rss_feeds, filename="RSSlinks.txt"):
         """Save the RSS feeds to a text file"""
         with open(filename, 'a') as f:
             for feed in rss_feeds:
@@ -239,6 +239,39 @@ REDDIT_USERNAME=your_reddit_username_here
         print("A sample .env file has been created. Please edit it with your Reddit API credentials.")
         return False
     return True
+
+
+def add_all_subreddits():
+    # Check if .env file exists, create a sample one if it doesn't
+    if not create_sample_env_file():
+        sys.exit(1)
+    
+    # Get credentials from environment variables
+    client_id = os.getenv('REDDIT_CLIENT_ID')
+    client_secret = os.getenv('REDDIT_CLIENT_SECRET')
+    username = os.getenv('REDDIT_USERNAME')
+    
+    redirect_uri = "http://localhost:8000"
+    user_agent = f"python:reddit-rss-fetcher:v1.0 (by /u/{username})"
+    
+    try:
+        # Initialize the fetcher
+        fetcher = RedditRSSFetcher(client_id, client_secret, redirect_uri, user_agent)
+        
+        # Authenticate
+        fetcher.authenticate()
+        
+        # Get followed subreddits
+        subreddits = fetcher.get_followed_subreddits()
+        
+        # Generate RSS feeds
+        rss_feeds = fetcher.get_rss_feeds(subreddits)
+        
+        # Save to file
+        fetcher.save_to_file(rss_feeds)
+            
+    except Exception as e:
+        print(f"Error: {e}")
 
 def main():
     # Check if .env file exists, create a sample one if it doesn't

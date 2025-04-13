@@ -2,7 +2,6 @@ import datetime
 import json
 import asyncio
 import websockets
-from feadparser import parseRSS
 
 class article:
     def __init__(self, source, title, description, content, timestamp, link):
@@ -40,6 +39,7 @@ def takeSnapshot(timestamp: datetime.datetime, youtube=False, reddit=False, spot
     from twitter_methods import get_tweets_since_timestamp
     from youtube_methods import add_all_subscriptions
     from reddit_methods import add_all_subreddits
+    from feadparser import parseRSS
     
     if youtube:
         add_all_subscriptions()
@@ -54,9 +54,10 @@ def takeSnapshot(timestamp: datetime.datetime, youtube=False, reddit=False, spot
         snap.extend(get_tweets_since_timestamp(timestamp))
 
     # parse RSS
+    print("Parsing RSS...")
     snap.extend(parseRSS())
 
-    snap.sort()
+    snap.sort(reverse=True)
     return snap
 
 # Websocket server implementation
@@ -121,10 +122,10 @@ async def test_client():
         request = {
             "action": "get_snapshot",
             "timestamp": datetime.datetime.now().isoformat(),
-            "youtube": True,
-            "reddit": True,
+            "youtube": False,
+            "reddit": False,
             "spotify": True,
-            "twitter": True
+            "twitter": False
         }
         
         print(f"Sending request: {request}")
@@ -132,6 +133,7 @@ async def test_client():
         
         # Wait for response
         response = await websocket.recv()
+        print(response)
         response_data = json.loads(response)
         
         print("\nReceived response:")
@@ -142,14 +144,16 @@ async def test_client():
         print(f"Received {len(articles)} articles")
         
         # Print first few articles as sample
-        for i, article in enumerate(articles[:3]):
+        #for i, article in enumerate(articles[:3]):
+        for i, article in enumerate(articles):
             print(f"\nArticle {i+1}:")
             print(f"Source: {article.get('source')}")
+            print(f"Timestamp: {article.get('timestamp')}")
             print(f"Title: {article.get('title')}")
             print(f"Link: {article.get('link')}")
         
-        if len(articles) > 3:
-            print(f"\n... and {len(articles) - 3} more articles")
+        # if len(articles) > 3:
+        #     print(f"\n... and {len(articles) - 3} more articles")
         
         return response_data
 

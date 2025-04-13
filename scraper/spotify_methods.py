@@ -10,13 +10,14 @@ from datetime import datetime
 import sys
 import os
 from dotenv import load_dotenv
+from scraper import article
 
 load_dotenv()
 
 # Get Spotify credentials from environment variables
 CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
-print(CLIENT_ID, CLIENT_SECRET)
+#print(CLIENT_ID, CLIENT_SECRET)
 REDIRECT_URI = "http://127.0.0.1:8888/callback"  # Ensure this matches exactly in Spotify Dashboard
 
 # Spotify API endpoints
@@ -155,7 +156,8 @@ def get_access_token(auth_code):
 def get_followed_artists(access_token):
     """Get the list of artists followed by the user"""
     headers = {
-        'Authorization': f'Bearer {access_token}'
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
     }
     
     # We're looking specifically for 'artist' type
@@ -262,25 +264,27 @@ def get_artist_latest_release(artist_id, access_token):
         print(f"Error getting latest release for artist {artist_id}: {e}")
         return None
 
-def display_latest_releases(artists_with_releases):
-    """Display the latest releases in a formatted way"""
+def latest_release_articles(artists_with_releases) -> list[article]:
+    """Return the latest releases as articles"""
     if not artists_with_releases:
-        print("No releases found for your followed artists.")
-        return
+        return None
     
-    print("\nLatest Releases from Your Followed Artists:")
-    print("=" * 50)
+    articles = []
     
-    for i, (artist, release) in enumerate(artists_with_releases, 1):
+    for i, (artist, release) in enumerate(artists_with_releases):
         if not release:
             continue
             
-        print(f"{i}. {artist['name']}")
-        print(f"   Latest Release: {release['name']} ({release['album_type'].capitalize()})")
-        print(f"   Release Date: {release['release_date']}")
-        print(f"   Tracks: {release.get('total_tracks', 'N/A')}")
-        print(f"   Spotify: {release['external_urls']['spotify']}")
-        print("-" * 50)
+        articles.append(article(
+            source = "Spotify",
+            title = f"{artist['name']} - {release['name']} ({release['album_type'].capitalize()})",
+            description = f"Release Date: {release['release_date']}, Tracks: {release.get('total_tracks', 'N/A')}",
+            content = f"Spotify: {release['external_urls']['spotify']}",
+            timestamp = datetime.strptime(release['release_date'], '%Y-%m-%d' if len(release['release_date']) == 10 else '%Y'),
+            link = release['external_urls']['spotify']
+        ))
+        
+    return articles
 
 def verify_credentials():
     if CLIENT_ID == "your_client_id" or CLIENT_SECRET == "your_client_secret":
@@ -338,6 +342,56 @@ def snapshot():
         
     except Exception as e:
         return json.dumps({"error": str(e)})
+    
+def add_all_artists():
+    """
+    Return a JSON output of all the latest releases sorted from most recent to least recent
+    """
+    if not verify_credentials():
+        return
+        
+    # Step 1: Get the authorization code
+    code = get_authorization()
+    print("Authorization code received!")
+    
+    # Step 2: Exchange the code for an access token
+    token_info = get_access_token(code)
+    access_token = token_info['access_token']
+
+    # Step 3: Get followed artists
+    followed_artists = get_followed_artists(access_token)
+    
+    # Step 4: Get the latest release for each artist    
+    artists_with_releases = []
+    
+    for i, artist in enumerate(followed_artists):
+        latest_release = get_artist_latest_release(artist['id'], access_token)
+        if latest_release:
+            artists_with_releases.append((artist, latest_release))
+    
+    # Display the results
+    return latest_release_articles(artists_with_releases)
+    
+
+def display_latest_releases(artists_with_releases):
+    """Display the latest releases in a formatted way"""
+    if not artists_with_releases:
+        print("No releases found for your followed artists.")
+        return
+    
+    print("\nLatest Releases from Your Followed Artists:")
+    print("=" * 50)
+    
+    for i, (artist, release) in enumerate(artists_with_releases, 1):
+        if not release:
+            continue
+            
+        print(f"{i}. {artist['name']}")
+        print(f"   Latest Release: {release['name']} ({release['album_type'].capitalize()})")
+        print(f"   Release Date: {release['release_date']}")
+        print(f"   Tracks: {release.get('total_tracks', 'N/A')}")
+        print(f"   Spotify: {release['external_urls']['spotify']}")
+        print("-" * 50)
 
 def main():
     try:
@@ -361,7 +415,7 @@ def main():
         
         # Step 3: Get followed artists
         print("\nStep 3/4: Fetching your followed artists...")
-        followed_artists = get_followed_artists(access_token)[0:5]
+        followed_artists = get_followed_artists(access_token)
         print(f"Found {len(followed_artists)} followed artists.")
         
         # Step 4: Get the latest release for each artist

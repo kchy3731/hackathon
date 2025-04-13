@@ -4,6 +4,7 @@ import datetime
 import argparse
 import os
 from dotenv import load_dotenv
+from scraper import article
 
 def authenticate_twitter():
     """
@@ -46,7 +47,7 @@ def get_followed_accounts(api):
     
     return followed_ids
 
-def get_tweets_since_timestamp(api, user_ids, timestamp):
+def get_tweets_since_timestamp(api, user_ids, timestamp) -> list[article]:
     """
     Get tweets from specified users posted after a given timestamp
     
@@ -58,7 +59,7 @@ def get_tweets_since_timestamp(api, user_ids, timestamp):
     Returns:
         List of tweet objects
     """
-    all_tweets = []
+    all_tweets: list[article] = []
     
     for user_id in user_ids:
         try:
@@ -66,7 +67,7 @@ def get_tweets_since_timestamp(api, user_ids, timestamp):
             tweets = tweepy.Cursor(
                 api.user_timeline,
                 user_id=user_id,
-                count=200,  # Max tweets per request
+                count=5,  # Max tweets per request
                 tweet_mode='extended'  # Get full tweet text
             ).items()
             
@@ -87,6 +88,15 @@ def get_tweets_since_timestamp(api, user_ids, timestamp):
                         'favorite_count': tweet.favorite_count,
                         'is_retweet': hasattr(tweet, 'retweeted_status')
                     }
+
+                    all_tweets.append(article(
+                        source = "Twitter",
+                        title = "@" + tweet_dict['user']['name'] + " just tweeted!",
+                        description = tweet_dict['text'],
+                        content = tweet_dict['text'],
+                        timestamp = tweet_dict['created_at'],
+                        link = f"https://twitter.com/{tweet_dict['user']['screen_name']}/status/{tweet_dict['id']}"
+                    ))
                     
                     # Add media information if available
                     if hasattr(tweet, 'extended_entities') and 'media' in tweet.extended_entities:
@@ -98,7 +108,7 @@ def get_tweets_since_timestamp(api, user_ids, timestamp):
                     break
         except Exception as e:
             print(f"Error fetching tweets for user {user_id}: {e}")
-    
+
     return all_tweets
 
 def main():
