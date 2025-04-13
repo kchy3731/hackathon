@@ -18,6 +18,15 @@ end
 get "/home" do
   redirect to('/') unless cookies.key? :auth
 
+  # Get the current user
+  user_id = 'wdbros@gmail.com'
+
+  # Fetch recent feed items from the database
+  @feed_items = DB[:regular_feed].where(user: user_id).order(Sequel.desc(:timestamp)).limit(20).all
+
+  # Fetch recent highlights
+  @highlights = DB[:highlight].where(user: user_id).order(Sequel.desc(:timestamp)).limit(10).all
+
   erb :home
 end
 

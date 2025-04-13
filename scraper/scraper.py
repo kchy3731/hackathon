@@ -15,25 +15,25 @@ class article:
 
     def __str__(self):
         return f"{self.source},{self.title},{self.description} - {self.content} - {self.timestamp} - {self.link}"
-    
+
     def __lt__(self, other):
         return self.timestamp < other.timestamp
-    
+
     def __gt__(self, other):
         return self.timestamp > other.timestamp
-    
+
     def __le__(self, other):
         return self.timestamp <= other.timestamp
-    
+
     def __ge__(self, other):
         return self.timestamp >= other.timestamp
-    
+
     def __eq__(self, other):
         return self.timestamp == other.timestamp
-    
+
     def __hash__(self):
         return hash(self.timestamp)
-    
+
     def to_dict(self):
         return {
             "source": self.source,
@@ -50,7 +50,7 @@ def takeSnapshot(timestamp: datetime.datetime, youtube=False, reddit=False, spot
     from youtube_methods import add_all_subscriptions
     from reddit_methods import add_all_subreddits
     from feadparser import parseRSS
-    
+
     if youtube:
         add_all_subscriptions()
     if reddit:
@@ -87,13 +87,13 @@ async def handle_client(websocket):
                 reddit = data.get('reddit', False)
                 spotify = data.get('spotify', False)
                 twitter = data.get('twitter', False)
-                
+
                 # Take snapshot with requested parameters
                 snapshot = takeSnapshot(timestamp, youtube, reddit, spotify, twitter)
-                
+
                 # Convert snapshot to JSON-serializable format
                 snapshot_data = [article.to_dict() for article in snapshot]
-                
+
                 # Send snapshot back to client
                 await websocket.send(json.dumps({
                     'status': 'success',
@@ -120,14 +120,47 @@ async def handle_client(websocket):
                     }))
                     continue
 
-                # Write to RSSlinks.txt
-                with open("RSSlinks.txt", "a", encoding="utf-8") as f:
-                    f.write(f"{feed_url}\n")
+                # Add to database
+                import db_connector
+                db_connector.init_connection_pool()
 
-                await websocket.send(json.dumps({
-                    'status': 'success',
-                    'message': 'RSS feed added successfully'
-                }))
+                # Check if the feed already exists
+                existing_sources = db_connector.get_rss_sources()
+                if feed_url in existing_sources:
+                    await websocket.send(json.dumps({
+                        'status': 'error',
+                        'message': 'This RSS feed is already in your sources'
+                    }))
+                    db_connector.close_connection_pool()
+                    continue
+
+                # Connect to database and add the feed
+                try:
+                    conn = db_connector.get_connection()
+                    cursor = conn.cursor()
+
+                    # Insert the new RSS feed
+                    query = "INSERT INTO source (type, source, user) VALUES (%s, %s, %s)"
+                    cursor.execute(query, ('RSS', feed_url, 'wdbros@gmail.com'))
+                    conn.commit()
+                    cursor.close()
+                    db_connector.release_connection(conn)
+
+                    # Also write to RSSlinks.txt for backward compatibility
+                    with open("RSSlinks.txt", "a", encoding="utf-8") as f:
+                        f.write(f"{feed_url}\n")
+
+                    await websocket.send(json.dumps({
+                        'status': 'success',
+                        'message': 'RSS feed added successfully'
+                    }))
+                except Exception as e:
+                    await websocket.send(json.dumps({
+                        'status': 'error',
+                        'message': f'Error adding feed: {str(e)}'
+                    }))
+                finally:
+                    db_connector.close_connection_pool()
             else:
                 await websocket.send(json.dumps({
                     'status': 'error',

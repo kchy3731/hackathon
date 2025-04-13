@@ -6,17 +6,40 @@
             <h1>Feed</h1>
             <div class="heavy-hr"></div>
             <div class="container">
-                <!-- TODO -->
+                <% if @feed_items && !@feed_items.empty? %>
+                    <div class="feed-items">
+                        <% @feed_items.each do |item| %>
+                            <div class="feed-item">
+                                <h3><a href="<%= item[:link] %>" target="_blank"><%= item[:headline] %></a></h3>
+                                <p class="timestamp"><%= item[:timestamp].strftime("%B %d, %Y at %I:%M %p") %></p>
+                            </div>
+                        <% end %>
+                    </div>
+                <% else %>
+                    <p class="no-items">No feed items available. Add RSS sources in the settings.</p>
+                <% end %>
             </div>
         </div>
-    </div> 
+    </div>
     <div class="heavy-vr"> </div>
     <div class="right-half">
         <div class="right">
             <h1>Highlights</h1>
             <div class="heavy-hr"></div>
             <div class="container">
-                <!-- TODO --> 
+                <% if @highlights && !@highlights.empty? %>
+                    <div class="highlight-items">
+                        <% @highlights.each do |highlight| %>
+                            <div class="highlight-item">
+                                <h3><%= highlight[:headline] %></h3>
+                                <p class="body"><%= highlight[:body] %></p>
+                                <p class="timestamp"><%= highlight[:timestamp].strftime("%B %d, %Y at %I:%M %p") %></p>
+                            </div>
+                        <% end %>
+                    </div>
+                <% else %>
+                    <p class="no-items">No highlights available.</p>
+                <% end %>
             </div>
         </div>
     </div>
