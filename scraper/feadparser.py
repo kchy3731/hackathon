@@ -1,6 +1,6 @@
 import feedparser
 
-url = "https://www.example.com/rss"
+url = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
 feed = feedparser.parse(url)
 
 print("Feed Title:", feed.feed.title)
