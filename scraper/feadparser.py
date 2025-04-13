@@ -22,14 +22,17 @@ for url in urls:
     print("-" * 40)
 
     for entry in feed.entries:
-        entry_date = datetime.strptime((entry.published).replace("-","+"), "%a, %d %b %Y %H:%M:%S %z")
-        if now - entry_date <= time_range:
-            print("Entry Title:", entry.title)
-            print("Entry Link:", entry.link)
-            print("Entry Published Date:", entry.published)
-            print("Entry Summary:", entry.summary)
-            print("Entry Description:", entry.description)
-            print("\n")
+        last_plus = (entry.published).rfind("+")
+        if last_plus != -1:
+            corrected_date_str = entry.published[:last_plus] + "-" + entry.published[last_plus + 1:]
+            entry_date = datetime.strptime((entry.published).replace("-","+"), "%a, %d %b %Y %H:%M:%S %z")
+            if now - entry_date <= time_range:
+                print("Entry Title:", entry.title)
+                print("Entry Link:", entry.link)
+                print("Entry Published Date:", entry.published)
+                print("Entry Summary:", entry.summary)
+                print("Entry Description:", entry.description)
+                print("\n")
 
     with open('rss_data.csv', mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ['title', 'link', 'published', 'summary']
@@ -38,4 +41,3 @@ for url in urls:
         # Iterate through entries and write to the CSV file
         for entry in feed.entries:
             writer.writerow({'title': entry.title, 'link': entry.link, 'published': entry_date})
-
