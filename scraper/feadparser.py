@@ -1,6 +1,6 @@
 import feedparser
 from datetime import datetime, timedelta
-from bf4 import beautifulsoup
+from bs4 import beautifulsoup
 import requests
 import csv
 
