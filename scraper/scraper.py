@@ -21,8 +21,17 @@ class article:
     def __gt__(self, other):
         return self.timestamp > other.timestamp
     
+    def __le__(self, other):
+        return self.timestamp <= other.timestamp
+    
+    def __ge__(self, other):
+        return self.timestamp >= other.timestamp
+    
     def __eq__(self, other):
         return self.timestamp == other.timestamp
+    
+    def __hash__(self):
+        return hash(self.timestamp)
     
     def to_dict(self):
         return {
@@ -57,7 +66,12 @@ def takeSnapshot(timestamp: datetime.datetime, youtube=False, reddit=False, spot
     print("Parsing RSS...")
     snap.extend(parseRSS())
 
-    snap.sort(reverse=True)
+    # sort and de-duplicate
+    snap = sorted(set(snap), reverse=True)
+
+    # remove all before timestamp
+    snap = [a for a in snap if a.timestamp >= timestamp]
+
     return snap
 
 # Websocket server implementation
@@ -83,6 +97,25 @@ async def handle_client(websocket):
                 await websocket.send(json.dumps({
                     'status': 'success',
                     'data': snapshot_data
+                }))
+            elif data.get('action') == 'add_rss_feed':
+                # Extract parameters from request
+                feed_url = data.get('feed_url', None)
+
+                if not feed_url:
+                    await websocket.send(json.dumps({
+                        'status': 'error',
+                        'message': 'Feed URL is required'
+                    }))
+                    continue
+
+                # Write to RSSlinks.txt
+                with open("RSSlinks.txt", "a", encoding="utf-8") as f:
+                    f.write(f"{feed_url}\n")
+
+                await websocket.send(json.dumps({
+                    'status': 'success',
+                    'message': 'RSS feed added successfully'
                 }))
             else:
                 await websocket.send(json.dumps({

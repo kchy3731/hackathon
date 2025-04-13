@@ -12,7 +12,7 @@ async def test_client():
         # Create test request
         request = {
             "action": "get_snapshot",
-            "timestamp": datetime.datetime.now().isoformat(),
+            "timestamp": (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat(),
             "youtube": True,
             "reddit": True,
             "spotify": True,
