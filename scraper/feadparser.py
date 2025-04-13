@@ -1,12 +1,14 @@
 import feedparser
 
-url = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
-feed = feedparser.parse(url)
+with open("RSSlinks.txt", "r") as file:
+    urls = file.readlines()
 
-for entry in feed.entries:
-   print("Entry Title:", entry.title)
-   print("Entry Link:", entry.link)
-   print("Entry Published Date:", entry.published)
-   print("Entry Summary:", entry.summary)
-   print("\n")
-
+for url in urls:
+    url = url.strip()
+    if not url:
+        continue
+    feed = feedparser.parse(url)
+    print("Feed Title:", feed.feed.get("title", "N/A"))
+    print("Feed Description:", feed.feed.get("description", "N/A"))
+    print("Feed Link:", feed.feed.get("link", "N/A"))
+    print("-" * 40)
