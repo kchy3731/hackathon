@@ -42,7 +42,9 @@ def parseRSS() -> list[article]:
     return articles
 
 def main():
+
     now = datetime.now()
+    lastLogin  = now
     time_range = timedelta(days=1)
 
     with open("RSSlinks.txt", "r") as file:
@@ -72,7 +74,7 @@ def main():
                     if (".youtube.com") in entry:
                         #code for youtube transcript
                         ytt_api = YouTubeTranscriptApi()
-                        Transcript = ytt_api.fetch(entry.link[entry.link.find("v=") + 2:])
+                        Transcript = (ytt_api.fetch(entry.link[entry.link.find("v=") + 2:])).fetch()
 
                     else:
                         response = requests.get(entry.link)
@@ -88,8 +90,13 @@ def main():
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writeheader()
             # Iterate through entries and write to the CSV file
-            for entry in feed.entries:
-                writer.writerow({'title': entry.title, 'link': entry.link, 'published': entry_date})
+            if (".youtube.com") in entry:
+                for entry in feed.entries:
+                    writer.writerow({'title': entry.title, 'link': entry.link, 'published': entry_date, 'content': soup.get_text()})
+            else:
+                for entry in feed.entries:
+                    writer.writerow({'title': entry.title, 'link': entry.link, 'published': entry_date, 'content': Transcript})
+
 
 if __name__ == "__main__":
     main()
