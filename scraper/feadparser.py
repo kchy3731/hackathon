@@ -25,7 +25,7 @@ for url in urls:
         last_plus = (entry.published).rfind("+")
         if last_plus != -1:
             corrected_date_str = entry.published[:last_plus] + "-" + entry.published[last_plus + 1:]
-            entry_date = datetime.strptime((entry.published).replace("-","+"), "%a, %d %b %Y %H:%M:%S %z")
+            entry_date = datetime.strptime(corrected_date_str, "%Y-%m-%dT%H:%M:%S-00:00")
             if now - entry_date <= time_range:
                 print("Entry Title:", entry.title)
                 print("Entry Link:", entry.link)
