@@ -22,7 +22,7 @@ for url in urls:
     print("-" * 40)
 
     for entry in feed.entries:
-        entry_date = datetime.strptime(entry.published, "%a, %d %b %Y %H:%M:%S %z")
+        entry_date = datetime.strptime((entry.published).replace("-","+"), "%a, %d %b %Y %H:%M:%S %z")
         if now - entry_date <= time_range:
             print("Entry Title:", entry.title)
             print("Entry Link:", entry.link)
