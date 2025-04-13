@@ -10,7 +10,26 @@
         <h1>Sources</h1>
         <form>
             <div class="sources-box">
-                <!-- TODO -->
+                <% if @sources && !@sources.empty? %>
+                    <table class="sources-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% @sources.each do |source| %>
+                                <tr>
+                                    <td><%= source[:type] %></td>
+                                    <td><%= source[:source] %></td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                <% else %>
+                    <p class="no-sources">No sources added yet.</p>
+                <% end %>
             </div>
             <a href="delete"><p>Delete</p></a>
             <a href="add"><p>Add</p></a>

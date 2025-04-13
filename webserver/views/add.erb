@@ -1,0 +1,22 @@
+<%= erb :settings_header %>
+
+<div class="mainwindow">
+    <div class="add-form-container">
+        <h1>Add RSS Feed</h1>
+        <% if @error %>
+            <div class="error-message">
+                <%= @error %>
+            </div>
+        <% end %>
+        <form action="/add" method="post">
+            <div class="form-group">
+                <label for="feed_url">RSS Feed URL:</label>
+                <input type="url" id="feed_url" name="feed_url" placeholder="https://example.com/feed.xml" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Add Feed</button>
+                <a href="/settings" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

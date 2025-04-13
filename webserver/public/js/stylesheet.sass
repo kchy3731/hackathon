@@ -18,7 +18,7 @@ $color2: #eeeeee
     overflow: hidden
 
 h1, h2, h3, h4, h5, h6, p
-    font-family: Manrope, sans-serif 
+    font-family: Manrope, sans-serif
     color: $color1
 
 html, body
@@ -54,7 +54,7 @@ html, body
     text-align: right
     justify-content: flex-end
     flex-grow: 100
-    padding: 0 20px 
+    padding: 0 20px
 
 .mainwindow
     @include window
@@ -72,25 +72,25 @@ html, body
     p
         font-size: 1.4em
         margin: 0px 8px 0px
-        
+
     .timestamp
         font-size: 1em
         margin: 1px 8px 0px
 
 .left-half
     width: 48%
-    height: 100vh 
+    height: 100vh
     float: left
     display: flex
     justify-content: flex-end
     text-align: right
     align-content: flex-end
-    
+
     .heavy-hr, .light-hr
         align-self: flex-end
 
     h1
-        font-weight: 400 
+        font-weight: 400
         font-style: italic
 
 .right-half
@@ -141,3 +141,82 @@ html, body
 .sources-box
     width: 400px
     height: 400px
+    overflow-y: auto
+    border: 1px solid $color1
+    border-radius: 5px
+    padding: 10px
+    margin-bottom: 20px
+
+.sources-table
+    width: 100%
+    border-collapse: collapse
+
+    th, td
+        padding: 8px
+        text-align: left
+        border-bottom: 1px solid #ddd
+
+    th
+        background-color: $color1
+        color: $color2
+
+.no-sources
+    text-align: center
+    color: #888
+    padding: 20px
+
+.add-form-container
+    width: 500px
+    margin: 50px auto
+    padding: 20px
+    border: 1px solid $color1
+    border-radius: 5px
+    background-color: $color2
+
+    h1
+        text-align: center
+        margin-bottom: 20px
+
+.form-group
+    margin-bottom: 15px
+
+    label
+        display: block
+        margin-bottom: 5px
+        font-weight: bold
+
+    input
+        width: 100%
+        padding: 8px
+        border: 1px solid #ccc
+        border-radius: 4px
+
+.form-actions
+    display: flex
+    justify-content: space-between
+    margin-top: 20px
+
+.btn-primary, .btn-secondary
+    padding: 10px 15px
+    border-radius: 4px
+    text-decoration: none
+    display: inline-block
+    cursor: pointer
+
+.btn-primary
+    background-color: $color1
+    color: $color2
+    border: none
+
+.btn-secondary
+    background-color: #ccc
+    color: #333
+    border: none
+
+.error-message
+    background-color: #ffdddd
+    color: #990000
+    padding: 10px
+    margin-bottom: 15px
+    border-radius: 4px
+    border: 1px solid #990000
