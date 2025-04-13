@@ -6,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 # Initialize models and parameters
@@ -104,7 +105,7 @@ class TrendAnalyzer:
 
 def hybrid_clustering(articles, eps=0.5):
     titles = [a["title"] for a in articles]
-    dates = [a["date"] for a in articles]
+    dates = [datetime.strptime(a["date"], "%Y-%m-%d") for a in articles]
     
     # Convert to ordinal dates
     date_ords = [datetime.strptime(d, "%Y-%m-%d").toordinal() for d in dates]
