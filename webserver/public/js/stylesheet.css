@@ -1,0 +1,157 @@
+@import url("https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+h1, h2, h3, h4, h5, h6, p {
+  font-family: Manrope, sans-serif;
+  color: #124512;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #eeeeee;
+  overflow: hidden;
+}
+
+.signinwindow {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  text-align: center;
+}
+.signinwindow h1, .signinwindow h2, .signinwindow h3, .signinwindow h4, .signinwindow h5, .signinwindow h6, .signinwindow p {
+  margin: 10px auto;
+}
+
+.g_id_signin {
+  margin: 50px;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  overflow: hidden;
+  background-color: #124512;
+  padding: 10px 40px;
+  line-height: 30px;
+}
+.header * {
+  color: #eeeeee;
+}
+
+.header-right {
+  display: flex;
+  text-align: right;
+  justify-content: flex-end;
+  flex-grow: 100;
+  padding: 0 20px;
+}
+
+.mainwindow {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mainwindow h1 {
+  font-size: 3em;
+  margin: 30px 18px 10px;
+}
+.mainwindow h2 {
+  font-weight: 500;
+  font-size: 2.4em;
+  margin: 30px 6px 5px;
+}
+.mainwindow p {
+  font-size: 1.4em;
+  margin: 0px 8px 0px;
+}
+.mainwindow .timestamp {
+  font-size: 1em;
+  margin: 1px 8px 0px;
+}
+
+.left-half {
+  width: 48%;
+  height: 100vh;
+  float: left;
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+  align-content: flex-end;
+}
+.left-half .heavy-hr, .left-half .light-hr {
+  align-self: flex-end;
+}
+.left-half h1 {
+  font-weight: 400;
+  font-style: italic;
+}
+
+.right-half {
+  width: 48%;
+  height: 100vh;
+  float: right;
+  justify-content: flex-start;
+  text-align: left;
+  display: flex;
+}
+.right-half h1 {
+  font-weight: 1200;
+}
+
+.left, .right {
+  display: flex;
+  flex-direction: column;
+}
+
+.heavy-vr {
+  margin: 0;
+  height: 110%;
+  top: 80%;
+  width: 4px;
+  background-color: #124512;
+}
+
+.heavy-hr {
+  height: 4px;
+  width: 350px;
+  background-color: #124512;
+}
+
+.light-hr {
+  height: 1px;
+  width: 100%;
+  background-color: #124512;
+  margin: 30px 6px;
+}
+
+.container {
+  overflow-y: auto;
+  height: 750px;
+  width: 400px;
+}
+
+.left-settings, .right-settings {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  width: 49%;
+  flex-direction: column;
+}
+
+.sources-box {
+  width: 400px;
+  height: 400px;
+}/*# sourceMappingURL=stylesheet.css.map */
