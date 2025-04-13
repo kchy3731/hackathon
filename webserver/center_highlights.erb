@@ -1,0 +1,36 @@
+<table>
+  <tr>
+    <td> <!--regular feed-->
+      <ul> <!-- begin list (embed RUBY for -->
+        <% @regular_feed.each do |e| %>
+          <li>
+            <h6>
+              <%= @e['headline'] %> 
+            </h6>
+            <h6>
+              <%= @e['time'] %>
+            </h6>
+          </li>
+        <% end %>
+      </ul>
+    </td>
+    <td> <!-- highlight feed -->
+      <ul> <!-- begin list (embed RUBY for -->
+        <% @highlight_feed.each do |e| %>
+          <li>
+            <h6>
+              <%= @e['headline'] %> 
+            </h6>
+            <h6>
+              <%= @e['body'] %>
+            </h6>
+            <h6>
+              <%= @e['timestamp'] %>
+            </h6>
+          </li>
+        <% end %>
+      </ul>
+    </td>
+  </tr>
+</table>
+
