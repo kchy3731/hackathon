@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap')
+
+// $color1: #451212
+$color1: #124512
+$color2: #eeeeee
+
+@mixin window()
+    margin: 0
+    padding: 0
+    height: 100%
+    width: 100%
+
+@mixin centering_window()
+    display: flex
+    justify-content: center
+    align-items: center
+    overflow: hidden
+
+h1, h2, h3, h4, h5, h6, p
+    font-family: Manrope, sans-serif 
+    color: $color1
+
+html, body
+    @include window
+    background-color: $color2
+    overflow: hidden
+
+.signinwindow
+    @include window
+    @include centering_window()
+    text-align: center
+
+    h1, h2, h3, h4, h5, h6, p
+        margin: 10px auto
+
+.g_id_signin
+    margin: 50px
+
+.header
+    align-items: center
+    display: flex
+    justify-content: flex-start
+    overflow: hidden
+    background-color: $color1
+    padding: 10px 40px
+    line-height: 30px
+
+    *
+        color: $color2
+
+.header-right
+    display: flex
+    text-align: right
+    justify-content: flex-end
+    flex-grow: 100
+    padding: 0 20px 
+
+.mainwindow
+    @include window
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    h1
+        font-size: 3em
+        margin: 30px 18px 10px
+    h2
+        font-weight: 500
+        font-size: 2.4em
+        margin: 30px 6px 5px
+    p
+        font-size: 1.4em
+        margin: 0px 8px 0px
+        
+    .timestamp
+        font-size: 1em
+        margin: 1px 8px 0px
+
+.left-half
+    width: 48%
+    height: 100vh 
+    float: left
+    display: flex
+    justify-content: flex-end
+    text-align: right
+    align-content: flex-end
+    
+    .heavy-hr, .light-hr
+        align-self: flex-end
+
+    h1
+        font-weight: 400 
+        font-style: italic
+
+.right-half
+    width: 48%
+    height: 100vh
+    float: right
+    justify-content: flex-start
+    text-align: left
+    display: flex
+    h1
+        font-weight: 1200
+
+.left, .right
+    display: flex
+    flex-direction: column
+
+.heavy-vr
+    margin: 0
+    height: 110%
+    top: 80%
+    width: 4px
+    background-color: $color1
+
+.heavy-hr
+    height: 4px
+    width: 350px
+    background-color: $color1
+
+.light-hr
+    height: 1px
+    width: 100%
+    background-color: $color1
+    margin: 30px 6px
+
+.container
+    overflow-y: auto
+    height: 750px
+    width: 400px
+
+.left-settings, .right-settings
+    display: flex
+    justify-content: center
+    align-content: center
+    text-align: center
+    width: 49%
+    flex-direction: column
+
+.sources-box
+    width: 400px
+    height: 400px
