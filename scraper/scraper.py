@@ -2,6 +2,7 @@ import datetime
 import json
 import asyncio
 import websockets
+import feedparser
 
 class article:
     def __init__(self, source, title, description, content, timestamp, link):
@@ -106,6 +107,16 @@ async def handle_client(websocket):
                     await websocket.send(json.dumps({
                         'status': 'error',
                         'message': 'Feed URL is required'
+                    }))
+                    continue
+
+                # verify validity of feed
+                feed = feedparser.parse(feed_url)
+
+                if feed.bozo or not feed.entries:
+                    await websocket.send(json.dumps({
+                        'status': 'error',
+                        'message': 'Invalid RSS feed'
                     }))
                     continue
 
