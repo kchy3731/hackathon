@@ -1,0 +1,25 @@
+<%= erb :header %>
+
+<div class="mainwindow">
+    <div class="highlights-container">
+        <h1>AI-Generated Highlights</h1>
+        <div class="heavy-hr"></div>
+        <div class="container">
+            <% if @highlights && !@highlights.empty? %>
+                <div class="highlight-items">
+                    <% @highlights.each do |highlight| %>
+                        <div class="highlight-item">
+                            <h3><%= highlight[:headline] %></h3>
+                            <p class="body"><%= highlight[:body] %></p>
+                            <p class="timestamp"><%= highlight[:timestamp].strftime("%B %d, %Y at %I:%M %p") %></p>
+                        </div>
+                    <% end %>
+                </div>
+            <% else %>
+                <p class="no-items">No AI-generated highlights available.</p>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+<!-- <%= erb :footer %> -->
