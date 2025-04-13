@@ -85,6 +85,19 @@ def get_rss_feeds(channels):
     
     return rss_feeds
 
+def add_all_subscriptions():
+    youtube = get_authenticated_service()
+    
+    # Get subscribed channels
+    channels = get_subscribed_channels(youtube)
+    
+    # Generate RSS feeds
+    rss_feeds = get_rss_feeds(channels)
+
+    with open("RSSlinks.txt", "a", encoding="utf-8") as f:
+        for feed in rss_feeds:
+            f.write(f"{feed['rss_url']}\n")
+
 def main():
     # Authenticate and build service
     print("Authenticating...")

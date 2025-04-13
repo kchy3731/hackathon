@@ -11,6 +11,7 @@ scraper/.env
 scraper/client_secrets.json
 scraper/*.txt
 scraper/venv
+scraper/__pycache__
 
 # webserver
 webserver/.vscode
