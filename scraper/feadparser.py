@@ -1,4 +1,12 @@
 import feedparser
+from datetime import datetime, timedelta
+
+import csv
+
+
+
+now = datetime.now()
+time_range = timedelta(days=1)
 
 with open("RSSlinks.txt", "r") as file:
     urls = file.readlines()
@@ -14,7 +22,20 @@ for url in urls:
     print("-" * 40)
 
     for entry in feed.entries:
-        print(" Title:", entry.get("title", "N/A"))
-        print(" Link:", entry.get("link", "N/A"))
-        print(" Summary:", entry.get("summary", "N/A"))
-        print("-" * 40)
+        entry_date = datetime.strptime(entry.published, "%a, %d %b %Y %H:%M:%S %z")
+        if now - entry_date <= time_range:
+            print("Entry Title:", entry.title)
+            print("Entry Link:", entry.link)
+            print("Entry Published Date:", entry.published)
+            print("Entry Summary:", entry.summary)
+            print("Entry Description:", entry.description)
+            print("\n")
+
+    with open('rss_data.csv', mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = ['title', 'link', 'published', 'summary']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        # Iterate through entries and write to the CSV file
+        for entry in feed.entries:
+            writer.writerow({'title': entry.title, 'link': entry.link, 'published': entry_date})
+
