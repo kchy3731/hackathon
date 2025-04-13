@@ -62,6 +62,20 @@ def main():
 
     now = datetime.now()
     lastLogin  = now
+    with open("Logins.txt", "a") as file:
+        file.write(now.isoformat() + "\n")
+
+# Read all login times
+with open("Logins.txt", "r") as file:
+    lines = [line.strip() for line in file.readlines() if line.strip()]
+
+# Determine time range
+if len(lines) >= 2:
+    last_login = datetime.fromisoformat(lines[-2])
+    current_login = datetime.fromisoformat(lines[-1])
+    time_range = current_login - last_login
+else:
+    # Default if only one login exists
     time_range = timedelta(days=1)
 
     with open("RSSlinks.txt", "r") as file:
