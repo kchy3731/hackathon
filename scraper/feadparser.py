@@ -76,9 +76,7 @@ def main():
 
                         if response.status_code == 200:
                             soup = BeautifulSoup(response.content, "html.parser") 
-                            print(soup.get_text())
-
-                        print("Entry Content:", Transcript)
+                            print("Entry Content:", soup.get_text())
                     print("\n")
 
         with open('rss_data.csv', mode='w', newline='', encoding='utf-8') as csv_file:
