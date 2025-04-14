@@ -25,11 +25,11 @@ class TrendAnalyzer:
             'diversity': 0.1,
             'search_interest': 0.2
         }
-    
+
     def get_google_trends(self, keywords, start_date, end_date):
 
         timeframe = f"{start_date.strftime('%Y-%m-%d')} {end_date.strftime('%Y-%m-%d')}"
-        
+
         try:
             pytrends.build_payload(
                 [f'"{k}"' for k in keywords],
@@ -42,18 +42,24 @@ class TrendAnalyzer:
             return trends_data.mean(axis=1).mean()
         except Exception as e:
             print(f"Google Trends error: {str(e)}")
-            return 50  
+            return 50
 
     def calculate_trend_score(self, cluster):
+        # Handle both string and datetime objects for dates
+        dates = []
+        for a in cluster:
+            if isinstance(a['date'], datetime):
+                dates.append(a['date'])
+            else:
+                dates.append(datetime.strptime(a['date'], "%Y-%m-%d"))
 
-        dates = [datetime.strptime(a['date'], "%Y-%m-%d") for a in cluster]
         sources = [a.get('source', 'unknown') for a in cluster]
         titles = [a['title'] for a in cluster]
 
         keywords = list(set([word for title in titles for word in title.split() if word.isalpha() and len(word) > 4]))
         start_date = min(dates)
         end_date = max(dates)
-        
+
 
         recency = self._calculate_recency(dates)
         velocity = self._calculate_velocity(dates)
@@ -69,7 +75,7 @@ class TrendAnalyzer:
             diversity * self.weights['diversity'],
             search_interest*self.weights['search_interest']
         ])
-        
+
         return {
             'recency': recency,
             'velocity': velocity,
@@ -83,19 +89,19 @@ class TrendAnalyzer:
         """Fixed recency calculation using article dates as reference"""
         if not dates:
             return 0.0
-        
+
         latest_date = max(dates)
         deltas = np.array([(latest_date - d).days for d in dates])
-        
-        time_window = max(self.time_window, 1)  
-        deltas = np.clip(deltas, 0, None) 
-        
+
+        time_window = max(self.time_window, 1)
+        deltas = np.clip(deltas, 0, None)
+
         return np.mean(np.exp(-deltas / time_window))
 
     def _calculate_velocity(self, dates):
         if len(dates) < 2: return 0
         sorted_dates = sorted(dates)
-        time_diffs = [(sorted_dates[i] - sorted_dates[i-1]).days 
+        time_diffs = [(sorted_dates[i] - sorted_dates[i-1]).days
                     for i in range(1, len(sorted_dates))]
         return np.mean(time_diffs) if time_diffs else 0
 
@@ -105,10 +111,17 @@ class TrendAnalyzer:
 
 def hybrid_clustering(articles, eps=0.5):
     titles = [a["title"] for a in articles]
-    dates = [datetime.strptime(a["date"], "%Y-%m-%d") for a in articles]
-    
+
+    # Handle both string and datetime objects for dates
+    dates = []
+    for a in articles:
+        if isinstance(a["date"], datetime):
+            dates.append(a["date"])
+        else:
+            dates.append(datetime.strptime(a["date"], "%Y-%m-%d"))
+
     # Convert to ordinal dates
-    date_ords = [datetime.strptime(d, "%Y-%m-%d").toordinal() for d in dates]
+    date_ords = [d.toordinal() for d in dates]
     date_feats = scaler.fit_transform(np.array(date_ords).reshape(-1, 1))
     date_feats = np.exp(-0.3 * (1 - date_feats))
 
@@ -133,7 +146,7 @@ def hybrid_clustering(articles, eps=0.5):
     clusters = {}
     for idx, label in enumerate(labels):
         clusters.setdefault(label, []).append(articles[idx])
-    
+
     return clusters
 
 def analyze_and_display(articles):
@@ -141,7 +154,7 @@ def analyze_and_display(articles):
     analyzer = TrendAnalyzer()
     trends = {}
     high_trend_clusters = []
-    
+
     def convert_numpy_types(obj):
         if isinstance(obj, np.generic):
             return obj.item()
@@ -164,17 +177,17 @@ def analyze_and_display(articles):
                 trends[label] = cluster_data
                 max_score = max(t['metrics']['score'] for t in trends.values()) if trends else 1
                 normalized_score = converted_metrics['score'] / max_score
-                
+
                 if normalized_score > 0.75:
                     high_trend_clusters.append({
                         'cluster_id': cluster_id,
                         'articles': [article['url'] for article in group],
                         'metrics': converted_metrics
                     })
-                    
+
             except Exception as e:
                 print(f"Error processing cluster {label}: {str(e)}")
-    
+
     if not trends:
         print("No trending clusters found")
         return

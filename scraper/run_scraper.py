@@ -26,10 +26,16 @@ def run_scraper(init_db=True, close_db=True):
         # We'll modify parseRSS to not initialize or close the connection pool
         # when called from here
         articles = parseRSS(manage_db_connection=False)
-        print(f"[{datetime.datetime.now()}] Fetched {len(articles)} articles")
+        print(f"[{datetime.datetime.now()}] Fetched {len(articles)} articles from feeds")
 
-        # Articles are already saved to the database in parseRSS()
-        # But we can log the count here
+        # Count how many were actually saved (not duplicates)
+        saved_count = 0
+        for article_obj in articles:
+            article_id = db_connector.save_article_to_db(article_obj)
+            if article_id is not None:
+                saved_count += 1
+
+        print(f"[{datetime.datetime.now()}] Saved {saved_count} new articles to database (skipped {len(articles) - saved_count} duplicates)")
         print(f"[{datetime.datetime.now()}] Scraper run completed successfully")
         return articles
 

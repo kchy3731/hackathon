@@ -105,8 +105,8 @@ def parseRSS(manage_db_connection=True) -> list[article]:
                             )
                             articles.append(new_article)
 
-                            # Save the article to the database
-                            db_connector.save_article_to_db(new_article)
+                            # Note: We no longer save articles here
+                            # This is now handled in run_scraper.py to better track duplicates
                     except Exception as e:
                         print(f"Error processing time comparison: {e}")
                 except Exception as e:

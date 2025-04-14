@@ -91,37 +91,59 @@ def save_article_to_db(article_obj, user_id='wdbros@gmail.com'):
         cursor = conn.cursor()
 
         # Check if article already exists to avoid duplicates
+        # First check by exact link match (most reliable)
         check_query = """
         SELECT id FROM regular_feed
-        WHERE headline = %s AND link = %s AND "user" = %s
+        WHERE link = %s AND "user" = %s
         """
         cursor.execute(check_query, (
+            article_obj.link,
+            user_id
+        ))
+
+        result = cursor.fetchone()
+        if result is not None:
+            article_id = result[0]
+            print(f"Skipping duplicate article (by link): {article_obj.title} | {article_obj.link} | ID: {article_id}")
+            cursor.close()
+            return None
+
+        # If no match by link, also check by headline for additional safety
+        check_query = """
+        SELECT id FROM regular_feed
+        WHERE headline = %s AND "user" = %s
+        """
+        cursor.execute(check_query, (
+            article_obj.title,
+            user_id
+        ))
+
+        result = cursor.fetchone()
+        if result is not None:
+            article_id = result[0]
+            print(f"Skipping duplicate article (by headline): {article_obj.title} | {article_obj.link} | ID: {article_id}")
+            cursor.close()
+            return None
+
+        # Insert the article if it doesn't exist
+        insert_query = """
+        INSERT INTO regular_feed (timestamp, headline, link, "user")
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
+        """
+
+        cursor.execute(insert_query, (
+            article_obj.timestamp,
             article_obj.title,
             article_obj.link,
             user_id
         ))
 
-        if cursor.fetchone() is None:
-            # Insert the article if it doesn't exist
-            insert_query = """
-            INSERT INTO regular_feed (timestamp, headline, link, "user")
-            VALUES (%s, %s, %s, %s)
-            RETURNING id
-            """
-
-            cursor.execute(insert_query, (
-                article_obj.timestamp,
-                article_obj.title,
-                article_obj.link,
-                user_id
-            ))
-
-            article_id = cursor.fetchone()[0]
-            conn.commit()
-            return article_id
-
+        article_id = cursor.fetchone()[0]
+        conn.commit()
+        print(f"Saved new article: {article_obj.title} | {article_obj.link} | ID: {article_id}")
         cursor.close()
-        return None
+        return article_id
     except Exception as e:
         if conn:
             conn.rollback()
