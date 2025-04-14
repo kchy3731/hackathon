@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Start script for Time/Frame application
+# This script starts all the necessary processes for the application to run
+
+echo "Starting Time/Frame application..."
+
+# Function to check if a directory exists
+check_directory() {
+    if [ ! -d "$1" ]; then
+        echo "Error: Directory $1 not found!"
+        exit 1
+    fi
+}
+
+# Check if all required directories exist
+check_directory "webserver"
+check_directory "scraper"
+check_directory "ai"
+
+# Start the webserver (Sinatra app)
+echo "Starting webserver..."
+cd webserver
+osascript -e 'tell app "Terminal" to do script "cd '$PWD' && rackup"' &
+cd ..
+
+# Wait a moment to ensure the webserver starts first
+sleep 2
+
+# Start the scraper with daemon mode
+echo "Starting scraper..."
+cd scraper
+osascript -e 'tell app "Terminal" to do script "cd '$PWD' && python3 run_scraper.py --daemon 5"' &
+cd ..
+
+# Wait a moment before starting the AI summarizer
+sleep 2
+
+# Start the AI summarizer in continuous mode
+echo "Starting AI summarizer..."
+cd ai
+osascript -e 'tell app "Terminal" to do script "cd '$PWD' && source ../scraper/venv/bin/activate && python3 summarizer_base.py --continuous --interval=5"' &
+cd ..
+
+echo "All processes started successfully!"
+echo "To view the applications:"
+echo "- Web interface: http://localhost:9292"
+echo "- Check the terminal windows for logs and status updates"
+echo ""
+echo "To stop all processes, close the terminal windows or run './stop'"

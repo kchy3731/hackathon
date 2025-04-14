@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Stop script for Time/Frame application
+# This script stops all the processes started by the 'start' script
+
+echo "Stopping Time/Frame application..."
+
+# Kill the rackup process (webserver)
+echo "Stopping webserver..."
+pkill -f "rackup"
+
+# Kill the scraper process
+echo "Stopping scraper..."
+pkill -f "run_scraper.py"
+
+# Kill the AI summarizer process
+echo "Stopping AI summarizer..."
+pkill -f "summarizer_base.py"
+
+echo "All processes stopped successfully!"
